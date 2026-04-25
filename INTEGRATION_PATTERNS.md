@@ -25,18 +25,64 @@ Narrow agents operate in highly constrained environments. Instead of having free
 ### How Developers Integrate LayerInfinite
 In this paradigm, the "Action" is the tool itself. Developers integrate LI primarily to leverage **Assist** or **Auto** routing modes. Because the tools are specific, the historical success rate of a tool directly dictates whether the agent orchestrator should invoke it again.
 
+### Python Implementation
 ```python
-# The developer explicitly decorates each highly-specific tool. 
-# The Python function name is automatically used as the action name.
-@li.action("database_latency_spike")
-def restart_postgres_service():
-    # Execute infrastructure code...
+import os
+from layerinfinite import Layerinfinite
+
+li = Layerinfinite(api_key=os.getenv("LI_API_KEY"), agent_id="support-agent", mode="assist")
+
+# 1. Decorate your existing tools (The function name becomes the action name)
+@li.action("refund_issue")
+def issue_full_refund(user_id: str):
     return True
 
-@li.action("database_latency_spike")
-def scale_read_replicas():
-    # Execute infrastructure code...
+@li.action("refund_issue")
+def issue_partial_credit(user_id: str):
     return True
+
+# 2. Inject into your Agent Execution Loop
+# Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
+
+# For ASSIST mode (Soft Routing):
+suggestion = li.suggest(task=current_issue)
+# -> Append `suggestion.action_name` to your agent's LLM prompt
+
+# For AUTO mode (Deterministic Execution):
+result = li.run(task=current_issue, user_id=customer_id)
+# -> `result` contains whatever the chosen tool returns (e.g., True)
+# -> Pass this result back into your agent's context so it knows what happened
+
+# For RECOMMEND mode (Passive Analytics):
+issue_full_refund(user_id=customer_id) 
+# -> The agent runs normally; LayerInfinite silently logs the outcome
+```
+
+### TypeScript Implementation
+```typescript
+import { Layerinfinite } from 'layerinfinite-sdk';
+
+const li = new Layerinfinite({ apiKey: process.env.LI_API_KEY!, agentId: 'support-agent', mode: 'assist' });
+
+// 1. Decorate your existing tools
+const issueFullRefund = li.action('refund_issue', 'issue_full_refund', async (userId: string) => { return true; });
+const issuePartialCredit = li.action('refund_issue', 'issue_partial_credit', async (userId: string) => { return true; });
+
+// 2. Inject into your Agent Execution Loop
+// Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
+
+// For ASSIST mode:
+const suggestion = await li.suggest(currentIssue);
+// -> Append `suggestion?.actionName` to your agent's LLM prompt
+
+// For AUTO mode:
+const result = await li.run(currentIssue, customerId);
+// -> `result` contains whatever the chosen tool returns
+// -> Pass this result back into your agent's context so it knows what happened
+
+// For RECOMMEND mode:
+await issueFullRefund(customerId); 
+// -> The agent runs normally; LayerInfinite silently logs the outcome
 ```
 
 **The Operational Value:** LayerInfinite does not intercept the LLM; rather, it sits at the orchestration middleware layer to **shape tool selection**. When a latency spike occurs, LI advises the execution layer: *"Scaling read replicas has a 94% success rate for this issue, whereas restarting Postgres only succeeds 12% of the time."*
@@ -53,25 +99,72 @@ Sovereign coding and research agents typically abandon large libraries of narrow
 ### How Developers Integrate LayerInfinite
 Naïvely decorating a `run_bash_command` primitive is ineffective, as running `pytest` is vastly different from `rm -rf /`. Instead, developers use LayerInfinite's **Action Normalization** and **Context Extraction** to derive learnable routing units.
 
+### Python Implementation
 ```python
-# The orchestrator derives a normalized action key from the raw command family
-def execute_normalized_bash(cmd_string: str, session_goal: str):
-    if "npm install" in cmd_string:
-        return run_bash_install(cmd_string=cmd_string, session_goal=session_goal)
-    else:
-        return run_bash_generic(cmd_string=cmd_string, session_goal=session_goal)
+import subprocess
+from layerinfinite import Layerinfinite
 
-# Developers use normalized wrapper functions so LayerInfinite can route them
-@li.action(task="react_bug_fix", name="bash:install")
-def run_bash_install(cmd_string: str, session_goal: str):
-    # LI automatically extracts `cmd_string` as raw_context for deeper diagnosis
-    result = subprocess.run(cmd_string, shell=True, capture_output=True)
-    return result.returncode == 0
+li = Layerinfinite(api_key="...", agent_id="swe-agent", mode="recommend")
 
-@li.action(task="react_bug_fix", name="bash:generic")
-def run_bash_generic(cmd_string: str, session_goal: str):
-    result = subprocess.run(cmd_string, shell=True, capture_output=True)
-    return result.returncode == 0
+# 1. Normalize your generic primitives into specific action families
+@li.action("react_bug")
+def bash_install(cmd_string: str):
+    return subprocess.run(cmd_string, shell=True).returncode == 0
+
+@li.action("react_bug")
+def bash_generic(cmd_string: str):
+    return subprocess.run(cmd_string, shell=True).returncode == 0
+
+# 2. Inject into your Agent Execution Loop
+# Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
+
+# For RECOMMEND mode (Observe & Circuit Break):
+bash_install(cmd_string=current_command)
+stats = li.observe(task=current_issue) 
+# -> Use `stats.success_rate` to halt the agent if it gets stuck in an infinite failure loop
+
+# For ASSIST mode (Soft Guardrails):
+suggestion = li.suggest(task=current_issue)
+# -> Tell your LLM: "LI warns that the `suggestion.action_name` approach works best here."
+
+# For AUTO mode (Forced Recovery):
+result = li.run(task=current_issue, cmd_string=current_command)
+# -> `result` contains the tool's return value (e.g., terminal output)
+# -> Pass this result back into your agent's context so it can read the output
+```
+
+### TypeScript Implementation
+```typescript
+import { Layerinfinite } from 'layerinfinite-sdk';
+import { execSync } from 'child_process';
+
+const li = new Layerinfinite({ apiKey: '...', agentId: 'swe-agent', mode: 'recommend' });
+
+// 1. Normalize your generic primitives into specific action families
+const bashInstall = li.action('react_bug', 'bash_install', (cmdString: string) => {
+    execSync(cmdString); return true;
+});
+
+const bashGeneric = li.action('react_bug', 'bash_generic', (cmdString: string) => {
+    execSync(cmdString); return true;
+});
+
+// 2. Inject into your Agent Execution Loop
+// Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
+
+// For RECOMMEND mode:
+bashInstall(currentCommand);
+const stats = await li.observe(currentIssue);
+// -> Use `stats?.successRate` to halt the agent if it gets stuck
+
+// For ASSIST mode:
+const suggestion = await li.suggest(currentIssue);
+// -> Tell your LLM: "LI warns that the `suggestion?.actionName` approach works best here."
+
+// For AUTO mode:
+const result = await li.run(currentIssue, currentCommand);
+// -> `result` contains the tool's return value (e.g., terminal output)
+// -> Pass this result back into your agent's context so it can read the output
 ```
 
 **The Operational Value:** This approach unlocks a powerful, three-tiered product story:
@@ -93,19 +186,68 @@ Modern multi-agent systems are fundamentally orchestration graphs with condition
 ### How Developers Integrate LayerInfinite
 Developers integrate LayerInfinite at the **decision boundaries between agents** to continuously evaluate handoff optimization.
 
+### Python Implementation
 ```python
-# The coordinator agent decides to delegate work to the QA Agent
-@li.action("content_verification")
-def delegate_to_qa_agent(draft_content):
-    qa_result = qa_agent.execute(draft_content)
-    if not qa_result.passed:
-        raise Exception("QA Agent failed to verify the content.")
-    return qa_result
+from layerinfinite import Layerinfinite
 
-# Or it decides to delegate to the Fact-Checker Agent
+li = Layerinfinite(api_key="...", agent_id="coordinator", mode="auto")
+
+# 1. Decorate your Handoff Functions
 @li.action("content_verification")
-def delegate_to_fact_checker(draft_content):
-    return fact_checker_agent.execute(draft_content)
+def delegate_to_qa(draft_content: str):
+    return True # Replace with actual qa_agent.execute()
+
+@li.action("content_verification")
+def delegate_to_fact_checker(draft_content: str):
+    return True # Replace with actual fact_checker_agent.execute()
+
+# 2. Inject into your Coordinator Execution Layer
+# Depending on the mode you selected, drop ONE of these lines into your Coordinator's routing node:
+
+# For AUTO mode (Dynamic Trust Routing):
+result = li.run(task=verification_task, draft_content=document_text)
+# -> Coordinator instantly skips the LLM and routes to the most reliable sub-agent
+# -> `result` contains whatever the sub-agent returns (e.g., True)
+# -> Pass this result back to your Coordinator so it can proceed with the workflow
+
+# For ASSIST mode (Trust Hints):
+suggestion = li.suggest(task=verification_task)
+# -> Pass `suggestion.action_name` to the Coordinator LLM to inform its handoff decision
+            
+# For RECOMMEND mode (Passive Trust Scoring):
+delegate_to_qa(draft_content=document_text)
+# -> Coordinator routes normally. LI silently tracks sub-agent trust scores in the background.
+```
+
+### TypeScript Implementation
+```typescript
+import { Layerinfinite } from 'layerinfinite-sdk';
+
+const li = new Layerinfinite({ apiKey: '...', agentId: 'coordinator', mode: 'auto' });
+
+// 1. Decorate your Handoff Functions
+const delegateToQa = li.action('content_verification', 'delegate_to_qa', async (draftContent: string) => {
+    return true; 
+});
+
+const delegateToFactChecker = li.action('content_verification', 'delegate_to_fact_checker', async (draftContent: string) => {
+    return true; 
+});
+
+// 2. Inject into your Coordinator Execution Layer
+// Depending on the mode you selected, drop ONE of these lines into your Coordinator's routing node:
+
+// For AUTO mode:
+const result = await li.run(verificationTask, documentText);
+// -> `result` contains whatever the sub-agent returns
+// -> Pass this result back to your Coordinator so it can proceed with the workflow
+
+// For ASSIST mode:
+const suggestion = await li.suggest(verificationTask);
+// -> Pass `suggestion?.actionName` to the Coordinator LLM
+
+// For RECOMMEND mode:
+await delegateToQa(documentText);
 ```
 
 **The Operational Value:** LayerInfinite provides real-time **delegation scoring and sub-agent trust metrics**. If the `qa_agent` node begins consistently failing on specific data types, LayerInfinite automatically drops its trust score, enabling the graph to conditionally route the workflow to the `fact_checker_agent` instead.
