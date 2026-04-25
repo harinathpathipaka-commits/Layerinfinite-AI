@@ -49,13 +49,15 @@ suggestion = li.suggest(task=current_issue)
 # -> Append `suggestion.action_name` to your agent's LLM prompt
 
 # For AUTO mode (Deterministic Execution):
+# -> REPLACE your existing manual tool execution with this line:
 result = li.run(task=current_issue, user_id=customer_id)
 # -> `result` contains whatever the chosen tool returns (e.g., True)
 # -> Pass this result back into your agent's context so it knows what happened
 
 # For RECOMMEND mode (Passive Analytics):
+# -> KEEP your existing manual tool execution exactly as it is:
 issue_full_refund(user_id=customer_id) 
-# -> The agent runs normally; LayerInfinite silently logs the outcome
+# -> LayerInfinite silently logs the outcome in the background
 ```
 
 ### TypeScript Implementation
@@ -76,13 +78,15 @@ const suggestion = await li.suggest(currentIssue);
 // -> Append `suggestion?.actionName` to your agent's LLM prompt
 
 // For AUTO mode:
+// -> REPLACE your existing manual tool execution with this line:
 const result = await li.run(currentIssue, customerId);
 // -> `result` contains whatever the chosen tool returns
 // -> Pass this result back into your agent's context so it knows what happened
 
 // For RECOMMEND mode:
+// -> KEEP your existing manual tool execution exactly as it is:
 await issueFullRefund(customerId); 
-// -> The agent runs normally; LayerInfinite silently logs the outcome
+// -> LayerInfinite silently logs the outcome in the background
 ```
 
 **The Operational Value:** LayerInfinite does not intercept the LLM; rather, it sits at the orchestration middleware layer to **shape tool selection**. When a latency spike occurs, LI advises the execution layer: *"Scaling read replicas has a 94% success rate for this issue, whereas restarting Postgres only succeeds 12% of the time."*
@@ -119,6 +123,7 @@ def bash_generic(cmd_string: str):
 # Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
 
 # For RECOMMEND mode (Observe & Circuit Break):
+# -> KEEP your existing manual tool execution exactly as it is:
 bash_install(cmd_string=current_command)
 stats = li.observe(task=current_issue) 
 # -> Use `stats.success_rate` to halt the agent if it gets stuck in an infinite failure loop
@@ -128,6 +133,7 @@ suggestion = li.suggest(task=current_issue)
 # -> Tell your LLM: "LI warns that the `suggestion.action_name` approach works best here."
 
 # For AUTO mode (Forced Recovery):
+# -> REPLACE your existing manual tool execution with this line:
 result = li.run(task=current_issue, cmd_string=current_command)
 # -> `result` contains the tool's return value (e.g., terminal output)
 # -> Pass this result back into your agent's context so it can read the output
@@ -153,6 +159,7 @@ const bashGeneric = li.action('react_bug', 'bash_generic', (cmdString: string) =
 // Depending on the mode you selected, drop ONE of these lines into your agent's main loop:
 
 // For RECOMMEND mode:
+// -> KEEP your existing manual tool execution exactly as it is:
 bashInstall(currentCommand);
 const stats = await li.observe(currentIssue);
 // -> Use `stats?.successRate` to halt the agent if it gets stuck
@@ -162,6 +169,7 @@ const suggestion = await li.suggest(currentIssue);
 // -> Tell your LLM: "LI warns that the `suggestion?.actionName` approach works best here."
 
 // For AUTO mode:
+// -> REPLACE your existing manual tool execution with this line:
 const result = await li.run(currentIssue, currentCommand);
 // -> `result` contains the tool's return value (e.g., terminal output)
 // -> Pass this result back into your agent's context so it can read the output
@@ -205,6 +213,7 @@ def delegate_to_fact_checker(draft_content: str):
 # Depending on the mode you selected, drop ONE of these lines into your Coordinator's routing node:
 
 # For AUTO mode (Dynamic Trust Routing):
+# -> REPLACE your existing manual tool execution with this line:
 result = li.run(task=verification_task, draft_content=document_text)
 # -> Coordinator instantly skips the LLM and routes to the most reliable sub-agent
 # -> `result` contains whatever the sub-agent returns (e.g., True)
@@ -215,8 +224,9 @@ suggestion = li.suggest(task=verification_task)
 # -> Pass `suggestion.action_name` to the Coordinator LLM to inform its handoff decision
             
 # For RECOMMEND mode (Passive Trust Scoring):
+# -> KEEP your existing manual tool execution exactly as it is:
 delegate_to_qa(draft_content=document_text)
-# -> Coordinator routes normally. LI silently tracks sub-agent trust scores in the background.
+# -> LayerInfinite silently tracks sub-agent trust scores in the background.
 ```
 
 ### TypeScript Implementation
@@ -238,6 +248,7 @@ const delegateToFactChecker = li.action('content_verification', 'delegate_to_fac
 // Depending on the mode you selected, drop ONE of these lines into your Coordinator's routing node:
 
 // For AUTO mode:
+// -> REPLACE your existing manual tool execution with this line:
 const result = await li.run(verificationTask, documentText);
 // -> `result` contains whatever the sub-agent returns
 // -> Pass this result back to your Coordinator so it can proceed with the workflow
@@ -247,6 +258,7 @@ const suggestion = await li.suggest(verificationTask);
 // -> Pass `suggestion?.actionName` to the Coordinator LLM
 
 // For RECOMMEND mode:
+// -> KEEP your existing manual tool execution exactly as it is:
 await delegateToQa(documentText);
 ```
 
