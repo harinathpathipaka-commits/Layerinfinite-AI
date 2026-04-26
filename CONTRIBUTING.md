@@ -28,8 +28,8 @@ This document covers everything you need to make a meaningful contribution: envi
 
 | Component | Status | Location |
 |-----------|--------|----------|
-| Python SDK | ✅ Open Source (MIT) | `layer5/sdks/python/` |
-| TypeScript SDK | ✅ Open Source (MIT) | `layer5/sdks/typescript/` |
+| Python SDK | ✅ Open Source (MIT) | `sdks/python/` |
+| TypeScript SDK | ✅ Open Source (MIT) | `sdks/typescript/` |
 | Hosted API (`layerinfinite.me`) | ❌ Proprietary | Managed service |
 | Dashboard (`layerinfinite.app`) | ❌ Proprietary | Managed service |
 | Import pipeline | ❌ Proprietary | Managed service |
@@ -41,7 +41,7 @@ Pull requests, bug reports, and feature requests for the SDKs are fully welcome.
 ## Repository Layout
 
 ```
-layer5/sdks/
+sdks/
 ├── python/
 │   ├── layerinfinite/      # SDK source
 │   │   ├── client.py       # Core client, decorators, routing logic
@@ -73,7 +73,7 @@ layer5/sdks/
 ```bash
 # 1. Clone and navigate
 git clone https://github.com/harinathpathipaka-commits/Layerinfinite-AI.git
-cd Layerinfinite-AI/layer5/sdks/python
+cd Layerinfinite-AI/sdks/python
 
 # 2. Create and activate a virtual environment
 python -m venv .venv
@@ -106,7 +106,7 @@ Without these, the test suite uses mocked HTTP via `respx` and does not require 
 
 ```bash
 # 1. Navigate to the TypeScript SDK
-cd layer5/sdks/typescript
+cd sdks/typescript
 
 # 2. Install dependencies (exact lockfile)
 npm ci
@@ -257,7 +257,7 @@ Releases are **fully automated via GitHub Actions** and triggered by pushing a s
 ### Python SDK
 
 ```bash
-# 1. Update version in layer5/sdks/python/pyproject.toml
+# 1. Update version in sdks/python/pyproject.toml
 # 2. Commit the version bump
 git commit -m "chore(python-sdk): bump version to X.Y.Z"
 
@@ -276,7 +276,7 @@ The workflow (`publish-python-sdk.yml`) will:
 ### TypeScript SDK
 
 ```bash
-# 1. Update version in layer5/sdks/typescript/package.json
+# 1. Update version in sdks/typescript/package.json
 # 2. Commit the version bump
 git commit -m "chore(ts-sdk): bump version to X.Y.Z"
 
