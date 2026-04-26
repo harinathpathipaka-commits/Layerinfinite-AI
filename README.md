@@ -16,7 +16,7 @@
     <a href="https://pypi.org/project/layerinfinite-sdk/"><img src="https://img.shields.io/pypi/v/layerinfinite-sdk" alt="PyPI" /></a>
     <a href="https://www.npmjs.com/package/@layerinfinite/sdk"><img src="https://img.shields.io/npm/v/@layerinfinite/sdk" alt="npm" /></a>
     <img src="https://img.shields.io/badge/latency-sub--5ms-00FF85" alt="Sub-5ms" />
-    <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" />
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" /></a>
   </p>
 </div>
 
