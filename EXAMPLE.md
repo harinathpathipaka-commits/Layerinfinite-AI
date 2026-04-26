@@ -45,7 +45,7 @@ li = Layerinfinite(
 )
 
 ROOT = Path(os.getenv("AGENT_WORKSPACE", ".")).resolve()
-MODEL = os.getenv("MODEL", "gpt-4o-mini")
+MODEL = os.getenv("MODEL", " ")
 MAX_STEPS = int(os.getenv("MAX_STEPS", "20"))
 MAX_FILE_BYTES = int(os.getenv("MAX_FILE_BYTES", "120000"))
 MAX_OUTPUT_CHARS = int(os.getenv("MAX_OUTPUT_CHARS", "12000"))
