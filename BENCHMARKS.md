@@ -184,17 +184,6 @@ Historical data proves the problem exists. The live test proves LayerInfinite so
 
 ---
 
-## What We Did Not Measure
-
-We are being explicit about the limits of this benchmark:
-
-- ❌ **Stronger models were not tested** — GPT-4o or Claude Sonnet may narrow the Baseline gap, but the architectural advantage of deterministic routing remains
-- ❌ **Token cost was not quantified** — Auto mode likely costs less per resolution (fewer retries, no wasted LLM calls on routing), but we have not measured this yet
-- ❌ **SDK unavailability was not tested** — We did not simulate scenarios where the LayerInfinite API itself is unreachable
-- ❌ **All downstream services were mocked** — Real infrastructure will introduce additional latency and failure variance that is not captured here
-- ❌ **Multi-agent coordination was not tested** — These results are for a single-agent architecture; fleet-level routing may show different dynamics
-
----
 
 ## How To Reproduce This
 
@@ -283,6 +272,7 @@ However, we acknowledge the circularity concern: **we defined the probabilities,
 ---
 
 <div align="center">
+  <p><strong>These benchmarks use a controlled simulation against calibrated mock infrastructure.</strong><br />Real-world results from beta users will be published as they become available.</p>
   <p><em>These benchmarks are updated as we expand the test suite. Last run: April 2026.</em></p>
   <p>
     <a href="README.md">← Back to README</a> ·
