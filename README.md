@@ -7,14 +7,14 @@
   <p>
     <a href="https://layerinfinite.app">Dashboard</a> ·
     <a href="https://pypi.org/project/layerinfinite-sdk/">PyPI</a> ·
-    <a href="https://www.npmjs.com/package/layerinfinite-sdk">npm</a> ·
+    <a href="https://www.npmjs.com/package/@layerinfinite/sdk">npm</a> ·
     <a href="BENCHMARKS.md">Benchmarks</a> ·
     <a href="ARCHITECTURE.md">Architecture</a> ·
     <a href="CONTRIBUTING.md">Contributing</a>
   </p>
   <p>
-    <img src="https://img.shields.io/pypi/v/layerinfinite-sdk" alt="PyPI" />
-    <img src="https://img.shields.io/npm/v/layerinfinite-sdk" alt="npm" />
+    <a href="https://pypi.org/project/layerinfinite-sdk/"><img src="https://img.shields.io/pypi/v/layerinfinite-sdk" alt="PyPI" /></a>
+    <a href="https://www.npmjs.com/package/@layerinfinite/sdk"><img src="https://img.shields.io/npm/v/@layerinfinite/sdk" alt="npm" /></a>
     <img src="https://img.shields.io/badge/latency-sub--5ms-00FF85" alt="Sub-5ms" />
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" />
   </p>
@@ -315,4 +315,3 @@ We welcome contributions to the open-source SDKs. See [CONTRIBUTING.md](CONTRIBU
 ## License
 
 MIT. See [LICENSE](LICENSE.md).
-
