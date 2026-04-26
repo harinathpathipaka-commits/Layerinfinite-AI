@@ -212,6 +212,8 @@ suggestion = li.suggest("deploy_failure")
 ### `auto`
 **Fully autonomous.** LayerInfinite picks the highest-probability action and executes it directly. If the action fails and `auto_fallback=True`, it automatically tries the next best action in the ranked list.
 
+> **If the LayerInfinite API is unreachable**, the SDK fails open — it executes the first registered action for the task and queues all telemetry locally for background retry, so your agent never blocks on our infrastructure.
+
 ```python
 li = Layerinfinite(api_key="...", agent_id="my-agent", mode="auto")
 
