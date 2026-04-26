@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="assets/logo.png" width="120" height="120" alt="LayerInfinite Matrix Intersection Logo" />
   <h1>LayerInfinite</h1>
   <p><strong>Decision intelligence infrastructure for autonomous AI agents.</strong></p>
   <p>Agents learn from production outcomes. No retraining. No vector databases. No guessing.</p>
