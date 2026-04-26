@@ -21,7 +21,6 @@ The results are not cherry-picked. Every number below is averaged across **3 ind
 
 | Parameter | Value |
 |-----------|-------|
-| **Model** | `gpt-4o-mini` |
 | **Task Domain** | CI/CD pipeline failure remediation |
 | **Total Scenarios** | 200 unique failure tickets |
 | **Runs Per Mode** | 3 independent runs (600 total executions) |
@@ -213,11 +212,11 @@ We anticipate skepticism. These are the toughest questions a senior engineer wil
 
 ### "Did the LLM actually pick wrong actions, or did you force it to?"
 
-**Every baseline decision was made by a real `gpt-4o-mini` API call using OpenAI function-calling.** There is no hardcoded random selection in the Baseline path.
+**Every baseline decision was made by a real  API call using OpenAI function-calling.** There is no hardcoded random selection in the Baseline path.
 
 The agent receives the failure description, the list of available actions, and makes a real `tool_choice: required` function call to select its remediation strategy. The model genuinely makes suboptimal choices — especially on Hard/Ambiguous failures where the correct action is not obvious from the description alone.
 
-For example, on `security_vulnerability` tickets, `gpt-4o-mini` selects `auto_patch` approximately 35% of the time — even though `notify_security_team` has a 99% historical success rate. The model infers that "patching" sounds like the right engineering response to a vulnerability, but in production, the correct first action is almost always to escalate to the security team. This is a reasoning gap that no amount of prompt engineering fixes, because the model has no access to outcome history.
+For example, on `security_vulnerability` tickets, llm selects `auto_patch` approximately 35% of the time — even though `notify_security_team` has a 99% historical success rate. The model infers that "patching" sounds like the right engineering response to a vulnerability, but in production, the correct first action is almost always to escalate to the security team. This is a reasoning gap that no amount of prompt engineering fixes, because the model has no access to outcome history.
 
 **The Baseline is the LLM's genuine best effort.** LayerInfinite improves it by injecting the one thing the model lacks: historical outcome data.
 
