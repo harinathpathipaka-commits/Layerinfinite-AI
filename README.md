@@ -7,6 +7,7 @@
     <a href="https://layerinfinite.app">Dashboard</a> ·
     <a href="https://pypi.org/project/layerinfinite-sdk/">PyPI</a> ·
     <a href="https://www.npmjs.com/package/layerinfinite-sdk">npm</a> ·
+    <a href="QUICKSTART.md">Quick Start</a> ·
     <a href="INTEGRATION_PATTERNS.md">Integration Patterns</a> ·
     <a href="ARCHITECTURE.md">Architecture</a> ·
     <a href="CONTRIBUTING.md">Contributing</a>
@@ -199,9 +200,18 @@ Most decision systems require weeks of live traffic to build confidence. **Layer
 If you have existing logs of agent successes and failures — whether from custom databases, raw server logs, or other observability platforms — you can bulk-load them into LayerInfinite via the Import API. 
 
 > [!IMPORTANT]
-> **API Key Continuity is Critical:** You must use the **exact same `api_key`** for the historical import as you use when initializing the SDK (`li = Layerinfinite(api_key="...")`). 
+> **The Golden Rule of Integration: Semantic Consistency** 
 > 
-> When the keys match, the routing engine immediately recognizes the imported tasks and actions. The moment you deploy your agent, it will boot up making highly optimized, data-driven decisions based on your entire historical production dataset.
+> When you import raw historical logs from LangChain, AutoGen, or any custom framework, LayerInfinite's semantic engine cleans the messy data and generates **canonical Task and Action names** on your Dashboard. 
+> 
+> To achieve the "Zero Cold-Start" advantage, your SDK integration **must perfectly mirror** those dashboard names.
+>
+> **The 3-Step Integration Rule:**
+> 1. **Check the Dashboard:** Open the Recommendations page and identify the canonical task (e.g., `"stripe_refund_issue"`) and action (e.g., `"process_full_refund"`).
+> 2. **Map the Task:** Use that exact string in your decorator: `@li.action("stripe_refund_issue")`.
+> 3. **Map the Action:** Ensure your underlying function name matches the action string: `def process_full_refund(...):`.
+> 
+> **Why this matters:** If you invent new names in your code instead of using the dashboard's canonical names, the SDK will treat them as brand-new tools with zero history—completely destroying your historical data advantage!
 
 ---
 
