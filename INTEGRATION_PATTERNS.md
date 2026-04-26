@@ -15,6 +15,32 @@ Before diving into patterns, it is critical to define the terminology used in mo
 
 ---
 
+> [!IMPORTANT]
+> **The Golden Prerequisite: Semantic Consistency**
+> 
+> Before choosing an integration pattern, developers must understand how LayerInfinite bridges historical telemetry with live execution. 
+> 
+> When you import raw historical logs from your agent's past runs (e.g., messy LangChain traces or custom JSON logs), LayerInfinite's ingestion engine semantically clusters the noise. It groups similar behaviors together and surfaces clean, **canonical Task and Action strings** on your LayerInfinite Dashboard.
+> 
+> **You must strictly map your SDK decorators to these canonical strings.** 
+> 
+> For example, if your imported logs show that your agent frequently tried to restart a database, the dashboard might categorize this under:
+> *   **Task:** `"database_recovery"`
+> *   **Action:** `"restart_postgres"`
+> 
+> When you write your code, you **cannot** invent new names like `@li.action("db_fix")` for the `reboot_sql()` function. If you do, the routing engine will treat `db_fix` as a brand-new, unseen problem with 0% historical context, and your "Zero Cold-Start" advantage is instantly destroyed.
+> 
+> **The Rule:** Your code must perfectly mirror the dashboard's semantic output:
+> ```python
+> # The string MUST exactly match the canonical task generated in the dashboard
+> @li.action("database_recovery")
+> def restart_postgres(): # The function name MUST exactly match the canonical action
+>     pass
+> ```
+> This rigid semantic mapping is what allows LayerInfinite to instantly apply months of historical probabilities to your agent the very second it boots up.
+
+---
+
 ## Pattern 1: Bounded Tool-Calling (Narrow Agents)
 **Frameworks:** LangChain, Vercel AI SDK, Custom Orchestrators  
 **Use Cases:** Automated DevOps, Customer Support Triage, Financial Reconciliations  
